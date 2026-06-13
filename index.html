@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Multiverse Books - Premium Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Premium Black & Gray Theme Variables */
+            --bg-body: #050505;
+            --bg-sidebar: rgba(12, 12, 14, 0.95);
+            --bg-card: linear-gradient(145deg, rgba(30, 30, 35, 0.7), rgba(15, 15, 18, 0.8));
+            --bg-input: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-glow: rgba(255, 255, 255, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            
+            /* Monochromatic Accents */
+            --accent-primary: #ffffff; 
+            --accent-success: #10b981; 
+            --accent-warning: #eab308; 
+            --accent-danger: #ef4444; 
+            --accent-info: #3b82f6; 
+            --accent-purple: #8b5cf6; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent;}
+        
+        body { 
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100svh;
+            background-color: var(--bg-body); 
+            background-image: radial-gradient(circle at top right, #27272a 0%, #000000 70%);
+            color: var(--text-primary); 
+            display: flex; 
+            overflow: hidden; 
+        }
+
+        body::before {
+            content: ''; position: absolute; width: 600px; height: 600px; background: #ffffff;
+            border-radius: 50%; filter: blur(250px); opacity: 0.03; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 0; pointer-events: none;
+        }
+
+        /* --- 🔑 LOGIN SCREEN OVERLAY STYLES --- */
+        .login-page-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100svh;
+            background-color: #000000;
+            background-image: radial-gradient(circle at 15% 50%, rgba(30, 30, 35, 0.8), transparent 25%), radial-gradient(circle at 85% 30%, rgba(20, 20, 25, 0.8), transparent 25%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+        .login-page-container::before { content: ''; position: absolute; width: 600px; height: 600px; background: #ffffff; border-radius: 50%; filter: blur(250px); opacity: 0.04; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
+        .login-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; padding: 0 20px; z-index: 1; }
+        .login-box { background: rgba(18, 18, 22, 0.7); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); width: 100%; max-width: 400px; padding: 45px 35px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15); border-left: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.12); text-align: center; position: relative; overflow: hidden; }
+        .login-box::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent); opacity: 0.6; }
+        .logo-container { width: 85px; height: 85px; margin: 0 auto 20px auto; border-radius: 22px; padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(0,0,0,0.8)); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .logo-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; background-color: #000; }
+        .login-box h1 { font-size: 24px; font-weight: 700; letter-spacing: 2px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .subtitle { font-size: 10px; font-weight: 600; color: #808080; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px; }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; color: #808080; font-weight: 600; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i { position: absolute; left: 18px; color: #666666; font-size: 16px; transition: all 0.3s ease; }
+        .input-wrapper input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px 16px 16px 50px; border-radius: 14px; color: #ffffff; font-size: 16px; outline: none; transition: all 0.3s ease; letter-spacing: 1px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); }
+        .input-wrapper input::placeholder { color: #4a4a4a; letter-spacing: 0.5px; }
+        .input-wrapper input:focus { border-color: rgba(255, 255, 255, 0.3); background: rgba(20, 20, 25, 0.8); }
+        .input-wrapper input:focus + i { color: #ffffff; transform: scale(1.1); }
+        .submit-btn { width: 100%; background: #ffffff; color: #000000; border: none; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1); }
+        .submit-btn:hover { transform: translateY(-2px); background: #e5e5e5; }
+        #recaptcha-container { margin-bottom: 15px; display: flex; justify-content: center; }
+        .loading { opacity: 0.8; pointer-events: none; background: #cccccc; }
+
+        /* --- 📊 MAIN ADMIN PANEL STYLES --- */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+        .sidebar { position: fixed; left: 0; top: 0; height: 100%; transform: translateX(-100%); width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 20px; z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(20px); box-shadow: 5px 0 25px rgba(0,0,0,0.9); }
+        .sidebar.active { transform: translateX(0); }
+        .brand { display: flex; align-items: center; gap: 12px; font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 45px; letter-spacing: 1px; white-space: nowrap; }
+        .brand-logo { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1); flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.2); background: #000; }
+        .nav-link { display: flex; align-items: center; gap: 15px; padding: 16px 20px; border-radius: 14px; color: var(--text-secondary); text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; margin-bottom: 12px; cursor: pointer; border: 1px solid transparent; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.08); transform: translateX(5px); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent); color: #fff; border-left: 4px solid var(--accent-primary); border-color: rgba(255, 255, 255, 0.1) transparent transparent transparent; }
+        .nav-link i { font-size: 1.2rem; color: inherit; transition: 0.3s; width: 20px; text-align: center; }
+        .nav-link.active i { color: var(--accent-primary); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .sidebar-bottom { margin-top: auto; padding-top: 25px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .system-status { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; color: #ffffff; letter-spacing: 1.5px; text-transform: uppercase; }
+        @keyframes blink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); box-shadow: 0 0 12px var(--accent-success); } 100% { opacity: 1; transform: scale(1); } }
+        .secure-dot-icon { width: 8px; height: 8px; background-color: var(--accent-success); border-radius: 50%; box-shadow: 0 0 10px var(--accent-success); animation: blink 1.5s infinite ease-in-out; }
+        .sidebar-footer-text { font-size: 0.65rem; color: #71717a; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; width: 100%; z-index: 1;}
+        .topbar { height: 80px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(10, 10, 12, 0.6); backdrop-filter: blur(20px); flex-shrink: 0; }
+        .topbar-left { display: flex; align-items: center; gap: 20px; }
+        .menu-toggle { display: block; font-size: 1.5rem; color: var(--text-primary); cursor: pointer; background: var(--bg-input); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .page-title { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; background: linear-gradient(to right, #ffffff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .admin-profile { display: flex; align-items: center; gap: 15px; padding: 6px 18px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 50px; cursor: pointer; transition: 0.3s;}
+        .admin-profile:hover { background: rgba(255,255,255,0.08); box-shadow: 0 0 20px rgba(255,255,255,0.05); transform: translateY(-2px); }
+        .admin-info { text-align: right; }
+        .admin-info h4 { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px;}
+        .admin-info span { font-size: 0.7rem; color: #a1a1aa; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;}
+        .admin-img-wrapper { position: relative; }
+        .admin-img { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-color); object-fit: cover; }
+        .status-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: var(--accent-success); border: 2px solid #000; border-radius: 50%; animation: blink 1.5s infinite ease-in-out; }
+
+        .dashboard-area { padding: 40px 50px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth; }
+        .dashboard-area::-webkit-scrollbar { width: 8px; }
+        .dashboard-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .section-container { width: 100%; max-width: 1100px; display: none; margin: 0 auto; }
+        .section-container.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .admin-card { background: var(--bg-card); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.15); border-top: 1px solid var(--border-glow); border-left: 1px solid rgba(255, 255, 255, 0.2); border-radius: 28px; padding: 45px; box-shadow: 0 40px 80px rgba(0,0,0,0.9), 0 0 30px rgba(255, 255, 255, 0.05), inset 0 0 40px rgba(255, 255, 255, 0.1); position: relative; overflow: hidden; }
+        .card-header { font-size: 1.3rem; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; letter-spacing: 1px;}
+        .card-header i { padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; color: #fff !important; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; position: relative; z-index: 2;}
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-label { font-size: 0.8rem; font-weight: 600; color: #d4d4d8; letter-spacing: 1.5px; text-transform: uppercase; }
+        
+        .form-input { background: var(--bg-input); border: 1px solid rgba(255, 255, 255, 0.15); padding: 16px 20px; border-radius: 14px; color: #fff; font-size: 1.05rem; outline: none; transition: all 0.3s ease; width: 100%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+        .form-input:focus { border-color: rgba(255, 255, 255, 0.6); background: rgba(30, 30, 35, 0.9); box-shadow: 0 0 18px rgba(255, 255, 255, 0.15), inset 0 2px 5px rgba(0,0,0,0.5); }
+        select.form-input { cursor: pointer; appearance: none; }
+        
+        .btn-submit { grid-column: 1 / -1; background: linear-gradient(135deg, #ffffff, #d4d4d8); color: #000; border: none; padding: 18px; border-radius: 16px; font-size: 1.05rem; font-weight: 800; letter-spacing: 1.5px; cursor: pointer; transition: all 0.3s ease; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-submit:hover { filter: brightness(1.1); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.35); }
+        .btn-edit-submit { background: linear-gradient(135deg, #e4e4e7, #a1a1aa); box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15); }
+
+        .table-responsive { overflow-x: auto; margin-top: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); position: relative; z-index: 2;}
+        .books-table { width: 100%; border-collapse: collapse; min-width: 800px; text-align: left; }
+        .books-table th { background: rgba(255,255,255,0.05); padding: 18px 25px; font-size: 0.85rem; font-weight: 600; color: #d4d4d8; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .books-table td { padding: 18px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem; vertical-align: middle; }
+        
+        .table-img { width: 50px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
+        .log-table-img { width: 40px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); margin-right: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        .action-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 1rem; cursor: pointer; margin-right: 10px; padding: 8px 14px; color: #fff;}
+        .btn-edit:hover { background: #ffffff; color: #000; border-color: #ffffff; transform: translateY(-2px);}
+        .btn-delete:hover { background: var(--accent-danger); color: #fff; border-color: var(--accent-danger); transform: translateY(-2px); }
+        .btn-recover { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); border-color: rgba(139, 92, 246, 0.4); font-size: 0.8rem; padding: 6px 12px; margin-top: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;}
+        .btn-recover:hover { background: var(--accent-purple); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);}
+        
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: 1.1rem; }
+        .log-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 5px;}
+        .log-add { background: rgba(16, 185, 129, 0.2); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .log-edit { background: rgba(59, 130, 246, 0.2); color: var(--accent-info); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .log-delete { background: rgba(239, 68, 68, 0.2); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .log-restore { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .log-admin-name { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff; }
+        .log-admin-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; padding: 20px; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: linear-gradient(145deg, rgba(25, 25, 30, 0.95), rgba(10, 10, 12, 0.98)); width: 100%; max-width: 800px; border-radius: 28px; border: 1px solid var(--border-glow); max-height: 90svh; overflow-y: auto; position: relative; padding: 35px;}
+        .close-modal { position: absolute; top: 25px; right: 25px; font-size: 1.4rem; color: #a1a1aa; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.08); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1);}
+        .close-modal:hover { color: #000; background: #fff; transform: rotate(90deg); }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 25px; }
+
+        #toast { position: fixed; bottom: 40px; right: 40px; background: #ffffff; color: #000; padding: 18px 30px; border-radius: 14px; font-size: 1.1rem; font-weight: 700; transform: translateX(150%); transition: 0.4s; z-index: 9999; display: flex; align-items: center; gap: 12px; }
+        #toast.show { transform: translateX(0); }
+
+        /* --- ⏳ GLOBAL HIDDEN CLASS --- */
+        .hidden { display: none !important; }
+
+        @media (max-width: 1024px) { .dashboard-area { padding: 30px; } .books-table { min-width: 700px; } }
+        @media (max-width: 768px) { .topbar { padding: 0 20px; height: 70px; } .page-title { font-size: 1.2rem; } .admin-info { display: none; } .dashboard-area { padding: 20px 15px; } .admin-card { padding: 25px 20px; border-radius: 20px; } .form-grid { grid-template-columns: 1fr; } .modal-content { padding: 20px; border-radius: 20px; max-height: 95svh; width: 98%; margin: 0 auto; } .modal-grid { grid-template-columns: 1fr; gap: 12px; } .close-modal { top: 15px; right: 15px; width: 32px; height: 32px; font-size: 1.1rem; } .form-input { padding: 12px 15px; font-size: 1rem; } .btn-submit { padding: 15px; font-size: 1rem; margin-top: 5px; } .books-table th, .books-table td { padding: 12px 15px; font-size: 0.85rem; } .log-table-img { width: 35px; height: 48px; } }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen" class="login-page-container hidden">
+        <div class="login-wrapper">
+            <div class="login-box">
+                <div class="logo-container">
+                    <img src="https://i.postimg.cc/cJdGqYHG/IMG-20260524-WA0004.jpg" alt="Logo">
+                </div>
+                <h1>MULTIVERSE BOOKS</h1>
+                <p class="subtitle" id="statusText">SECURE VAULT ACCESS</p>
+
+                <div id="phoneForm">
+                    <div class="input-group">
+                        <label>FULL NAME</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="userName" placeholder="Ex: Rahul Kumar" required autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>MOBILE NUMBER</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                            <input type="tel" id="mobileNumber" placeholder="Ex: 9876543210" pattern="[0-9]{10}" maxlength="10">
+                        </div>
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <button class="submit-btn" id="sendOtpBtn">
+                        <span>SEND OTP</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <div id="otpForm" class="hidden">
+                    <div class="input-group">
+                        <label>ENTER 6-DIGIT OTP</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="text" id="otpCode" placeholder="••••••" maxlength="6">
+                        </div>
+                    </div>
+                    <button class="submit-btn" id="verifyOtpBtn">
+                        <span>VERIFY & LOGIN</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar hidden" id="sidebar">
+        <div class="brand">
+            <img src="https://i.postimg.cc/cJdGqYHG/IMG-20260524-WA0004.jpg" alt="Logo" class="brand-logo">
+            MULTIVERSE ADMIN
+        </div>
+        
+        <div class="nav-link active" id="navAddBook" onclick="switchTab('add')">
+            <i class="fas fa-plus-circle"></i> Add New Book
+        </div>
+        <div class="nav-link" id="navManageBooks" onclick="switchTab('manage')">
+            <i class="fas fa-layer-group"></i> Manage Books
+        </div>
+        <div class="nav-link" id="navAnalytics" onclick="switchTab('analytics')">
+            <i class="fas fa-chart-line"></i> System Logs
+        </div>
+
+        <div class="nav-link" id="btnLogout" style="color: var(--accent-danger); margin-top: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2);">
+            <i class="fas fa-sign-out-alt"></i> Secure Logout
+        </div>
+        
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="secure-dot-icon"></span> SYSTEM SECURE
+            </div>
+            <div class="sidebar-footer-text">
+                MULTIVERSE BOOKS • SECURED
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content hidden" id="mainContent">
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <div class="page-title" id="topbarTitle">Add New Book</div>
+            </div>
+            <div class="admin-profile">
+                <div class="admin-info">
+                    <h4 id="currentAdminName">Verifying Admin...</h4>
+                    <span>Active Session</span>
+                </div>
+                <div class="admin-img-wrapper">
+                    <img src="https://i.postimg.cc/D0BF1b77/file-000000000e847207a64f6711d825a859.png" class="admin-img" alt="Admin">
+                    <span class="status-dot"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-area">
+            <div id="sectionAddBook" class="section-container active">
+                <div class="admin-card">
+                    <div class="card-header"><i class="fas fa-pen-nib"></i> Enter Book Details</div>
+                    <form id="addBookForm" class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Book Title</label>
+                            <input type="text" id="inTitle" class="form-input" placeholder="e.g. Physics by Khan Sir" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Author Name</label>
+                            <input type="text" id="inAuthor" class="form-input" placeholder="e.g. Khan Sir" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Publish Year</label>
+                            <input type="text" id="inYear" class="form-input" placeholder="e.g. 2026" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Language</label>
+                            <select id="inLang" class="form-input">
+                                <option value="Hindi">Hindi</option>
+                                <option value="English">English</option>
+                                <option value="Bilingual">Bilingual</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Exam Relevance</label>
+                            <input type="text" id="inExams" class="form-input" placeholder="e.g. SSC, BPSC, RRB" required autocomplete="off">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Cover Image URL</label>
+                            <input type="url" id="inImage" class="form-input" placeholder="https://example.com/image.jpg" required autocomplete="off">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Direct PDF Link</label>
+                            <input type="url" id="inPdfUrl" class="form-input" placeholder="Google Drive or Direct Link" required autocomplete="off">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">YouTube Tutorial Link (Optional)</label>
+                            <input type="url" id="inYtUrl" class="form-input" placeholder="https://youtube.com/watch?v=..." autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-cloud-upload-alt"></i> Publish Book to Database
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="sectionManageBooks" class="section-container">
+                <div class="admin-card">
+                    <div class="card-header"><i class="fas fa-list"></i> Manage Vault Inventory</div>
+                    <div class="table-responsive">
+                        <table class="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Cover</th>
+                                    <th>Book Information</th>
+                                    <th>Exams / Lang</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="booksTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sectionAnalytics" class="section-container">
+                <div class="admin-card">
+                    <div class="card-header"><i class="fas fa-shield-alt"></i> System Activity Logs</div>
+                    <div class="table-responsive">
+                        <table class="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Action Taken</th>
+                                    <th>Modified File / Book</th>
+                                    <th>Admin Authority</th>
+                                    <th>Date & Recovery</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <tr><td colspan="4" class="empty-state">Loading Activity Logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 15px; text-align: center; font-weight: 500;">
+                        <i class="fas fa-info-circle"></i> System logs and deleted files are securely retained for a <strong>Lifetime</strong>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <i class="fas fa-times close-modal" onclick="closeEditModal()"></i>
+            <div class="card-header" style="margin-bottom: 20px;"><i class="fas fa-pen"></i> Edit Vault Record</div>
+            <form id="editBookForm" class="modal-grid">
+                <input type="hidden" id="editDocId"> 
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Book Title</label>
+                    <input type="text" id="edTitle" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Cover Image URL</label>
+                    <input type="url" id="edImage" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Author Name</label>
+                    <input type="text" id="edAuthor" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Publish Year</label>
+                    <input type="text" id="edYear" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Language</label>
+                    <select id="edLang" class="form-input">
+                        <option value="Hindi">Hindi</option>
+                        <option value="English">English</option>
+                        <option value="Bilingual">Bilingual</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Exam Relevance</label>
+                    <input type="text" id="edExams" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Direct PDF Link</label>
+                    <input type="url" id="edPdfUrl" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">YouTube Link (Optional)</label>
+                    <input type="url" id="edYtUrl" class="form-input" autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit btn-edit-submit" style="grid-column: 1 / -1;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Action Successful!</span></div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        if(menuToggle) menuToggle.addEventListener('click', toggleMenu);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleMenu);
+
+        function switchTab(tab) {
+            document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+
+            if(tab === 'add') {
+                document.getElementById('sectionAddBook').classList.add('active');
+                document.getElementById('navAddBook').classList.add('active');
+                document.getElementById('topbarTitle').innerText = "Add New Book";
+            } else if (tab === 'manage') {
+                document.getElementById('sectionManageBooks').classList.add('active');
+                document.getElementById('navManageBooks').classList.add('active');
+                document.getElementById('topbarTitle').innerText = "Manage Vault";
+            } else if (tab === 'analytics') {
+                document.getElementById('sectionAnalytics').classList.add('active');
+                document.getElementById('navAnalytics').classList.add('active');
+                document.getElementById('topbarTitle').innerText = "System Logs";
+            }
+            
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            
+            if(message.includes("Deleted") || message.includes("Logout")) {
+                toast.style.background = "#ef4444";
+                toast.style.color = "#fff";
+            } else if (message.includes("Updated") || message.includes("Restored")) {
+                toast.style.background = "#3b82f6";
+                toast.style.color = "#fff";
+            } else {
+                toast.style.background = "#10b981";
+                toast.style.color = "#fff";
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        window.closeEditModal = function() { document.getElementById('editModal').classList.remove('active'); }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // 🔥 APNI FIREBASE DETAILS COPIED FROM CONSOLE
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXBSGCZFdkSbk-Ireoo7sRY4mLzS25nyk",
+            authDomain: "multiverse-books-2.firebaseapp.com",
+            projectId: "multiverse-books-2",
+            storageBucket: "multiverse-books-2.firebasestorage.app",
+            messagingSenderId: "59280260709",
+            appId: "1:59280260709:web:ef05fbe489ce2ee41e108c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let CURRENT_ADMIN = "Verifying Authority..."; 
+        let dbBooks = [];
+        let dbLogs = [];
+        let booksUnsubscribe = null;
+        let logsUnsubscribe = null;
+        let confirmationResult;
+
+        // ============================================
+        // 🔒 AUTH STATE CHECKER & GATEKEEPER FLOW
+        // ============================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User logged in hai -> Admin panel show karo, login hidden karo
+                CURRENT_ADMIN = user.displayName || user.phoneNumber || "Admin Authorized";
+                document.getElementById('currentAdminName').innerText = CURRENT_ADMIN;
+
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+
+                // Database synchronization chalu karo
+                initDatabaseListeners();
+            } else {
+                // User logged out hai -> Login panel show karo, admin hidden karo
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+                
+                stopDatabaseListeners();
+            }
+        });
+
+        // ============================================
+        // 🚪 SECURE LOGOUT MANAGEMENT
+        // ============================================
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            if(confirm("Do you want to log out from this secure admin session?")) {
+                signOut(auth).then(() => {
+                    showToast("Logged out safely.");
+                }).catch((error) => {
+                    showToast("Logout Failed!");
+                });
+            }
+        });
+
+        // ============================================
+        // 🔑 PHONE + OTP AUTH SYSTEM ENGINE
+        // ============================================
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal', 
+            'callback': (response) => {}
+        });
+
+        document.getElementById('sendOtpBtn').addEventListener('click', () => {
+            const userName = document.getElementById('userName').value.trim();
+            const phoneNumber = document.getElementById('mobileNumber').value;
+            const btn = document.getElementById('sendOtpBtn');
+            
+            if (userName === "") { alert("Please enter your Full Name first"); return; }
+            if (phoneNumber.length !== 10) { alert("Please enter valid 10 digit number"); return; }
+
+            const numberForFirebase = "+91" + phoneNumber;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>SENDING...</span>';
+            btn.classList.add('loading');
+
+            signInWithPhoneNumber(auth, numberForFirebase, window.recaptchaVerifier)
+                .then((result) => {
+                    confirmationResult = result;
+                    document.getElementById('phoneForm').classList.add('hidden');
+                    document.getElementById('otpForm').classList.remove('hidden');
+                    document.getElementById('statusText').innerText = "OTP SENT TO " + phoneNumber;
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                    btn.innerHTML = '<span>SEND OTP</span> <i class="fa-solid fa-paper-plane"></i>';
+                    btn.classList.remove('loading');
+                });
+        });
+
+        document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+            const otpCode = document.getElementById('otpCode').value;
+            const userName = document.getElementById('userName').value.trim();
+            const btn = document.getElementById('verifyOtpBtn');
+
+            if (otpCode.length !== 6) { alert("Please enter complete 6 digit OTP"); return; }
+
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>VERIFYING...</span>';
+            btn.classList.add('loading');
+
+            confirmationResult.confirm(otpCode)
+                .then((result) => {
+                    const user = result.user;
+                    updateProfile(user, { displayName: userName }).then(() => {
+                        showToast("Welcome Authorization Granted!");
+                    }).catch((error) => {
+                        showToast("Profile Updated with UID");
+                    });
+                })
+                .catch((error) => {
+                    alert("INVALID OTP! Please try again.");
+                    btn.innerHTML = '<span>VERIFY & LOGIN</span> <i class="fa-solid fa-arrow-right"></i>';
+                    btn.classList.remove('loading');
+                });
+        });
+
+        // ============================================
+        // 📊 FIRESTORE DATABASE LISTENER STREAMS
+        // ============================================
+        function initDatabaseListeners() {
+            if (booksUnsubscribe || logsUnsubscribe) return;
+
+            const qBooks = query(collection(db, "books"), orderBy("createdAt", "desc"));
+            booksUnsubscribe = onSnapshot(qBooks, (snapshot) => {
+                dbBooks = [];
+                snapshot.forEach((doc) => {
+                    let data = doc.data();
+                    data.id = doc.id; 
+                    dbBooks.push(data);
+                });
+                renderBooks();
+            });
+
+            const qLogs = query(collection(db, "activity_logs"), orderBy("timestamp", "desc"));
+            logsUnsubscribe = onSnapshot(qLogs, (snapshot) => {
+                dbLogs = [];
+                snapshot.forEach((doc) => {
+                    let logData = doc.data();
+                    logData.id = doc.id; 
+                    dbLogs.push(logData);
+                });
+                renderLogs();
+            });
+        }
+
+        function stopDatabaseListeners() {
+            if (booksUnsubscribe) { booksUnsubscribe(); booksUnsubscribe = null; }
+            if (logsUnsubscribe) { logsUnsubscribe(); logsUnsubscribe = null; }
+        }
+
+        // Log Actions Trace Function
+        async function logActivity(actionType, bookTitle, imageUrl = "", deletedBookData = null) {
+            try {
+                await addDoc(collection(db, "activity_logs"), {
+                    action: actionType,
+                    bookTitle: bookTitle,
+                    image: imageUrl,
+                    deletedData: deletedBookData, 
+                    adminName: CURRENT_ADMIN,
+                    timestamp: new Date().getTime(),
+                    dateStr: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' })
+                });
+            } catch(e) {
+                console.error("Failed to track operational logs", e);
+            }
+        }
+
+        // Add Book Submission
+        document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Publishing...`;
+            
+            const titleInput = document.getElementById('inTitle').value;
+            const imgInput = document.getElementById('inImage').value;
+
+            const newBook = {
+                title: titleInput,
+                author: document.getElementById('inAuthor').value,
+                image: imgInput,
+                year: document.getElementById('inYear').value,
+                lang: document.getElementById('inLang').value,
+                exams: document.getElementById('inExams').value,
+                pdfLink: document.getElementById('inPdfUrl').value,
+                ytLink: document.getElementById('inYtUrl').value,
+                dateAdded: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(),
+                createdAt: new Date().getTime()
+            };
+
+            try {
+                await addDoc(collection(db, "books"), newBook);
+                await logActivity("ADD", titleInput, imgInput); 
+                showToast("Book Published Successfully!");
+                e.target.reset(); 
+            } catch (error) {
+                alert("Error saving transaction data into records.");
+            }
+            btn.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> Publish Book to Database`;
+        });
+
+        // Render Books Table UI
+        function renderBooks() {
+            const tbody = document.getElementById('booksTableBody');
+            tbody.innerHTML = '';
+            if (dbBooks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No records found. The vault is currently empty.</td></tr>`;
+                return;
+            }
+            dbBooks.forEach((book, index) => {
+                const safeTitle = book.title.replace(/'/g, "\\'"); 
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><img src="${book.image}" class="table-img" onerror="this.src='https://via.placeholder.com/50x70?text=No+Img'"></td>
+                    <td>
+                        <strong style="color:#fff; display:block; margin-bottom:6px; font-size:1.1rem; letter-spacing:0.5px;">${book.title}</strong>
+                        <span style="font-size: 0.85rem; color: #a1a1aa;"><i class="fas fa-pen-nib" style="margin-right:5px;"></i> ${book.author} &nbsp;|&nbsp; <i class="far fa-calendar-alt" style="margin-right:5px;"></i> ${book.year}</span>
+                    </td>
+                    <td>
+                        <div style="font-size:0.9rem; color:#d4d4d8; margin-bottom:6px;">${book.exams}</div>
+                        <span style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem;">${book.lang}</span>
+                    </td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="openEditModal(${index})" title="Edit Record"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn btn-delete" onclick="deleteBook('${book.id}', '${safeTitle}')" title="Delete Record"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Delete Records Operation
+        window.deleteBook = async function(id, title) {
+            if(confirm(`Are you sure you want to delete "${title}" permanently?`)) {
+                const bookToDelete = dbBooks.find(b => b.id === id); 
+                try {
+                    await deleteDoc(doc(db, "books", id));
+                    await logActivity("DELETE", title, bookToDelete.image, bookToDelete); 
+                    showToast("Record Deleted!");
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+
+        // Open Modal Records
+        window.openEditModal = function(index) {
+            const book = dbBooks[index];
+            document.getElementById('editDocId').value = book.id;
+            document.getElementById('edTitle').value = book.title;
+            document.getElementById('edAuthor').value = book.author;
+            document.getElementById('edYear').value = book.year;
+            document.getElementById('edLang').value = book.lang;
+            document.getElementById('edExams').value = book.exams;
+            document.getElementById('edImage').value = book.image;
+            document.getElementById('edPdfUrl').value = book.pdfLink;
+            document.getElementById('edYtUrl').value = book.ytLink || "";
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        // Edit Book Update Logic
+        document.getElementById('editBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving...`;
+
+            const docId = document.getElementById('editDocId').value;
+            const updatedTitle = document.getElementById('edTitle').value;
+            const updatedImage = document.getElementById('edImage').value;
+            
+            const updatedData = {
+                title: updatedTitle,
+                author: document.getElementById('edAuthor').value,
+                image: updatedImage,
+                year: document.getElementById('edYear').value,
+                lang: document.getElementById('edLang').value,
+                exams: document.getElementById('edExams').value,
+                pdfLink: document.getElementById('edPdfUrl').value,
+                ytLink: document.getElementById('edYtUrl').value
+            };
+
+            try {
+                await updateDoc(doc(db, "books", docId), updatedData);
+                await logActivity("EDIT", updatedTitle, updatedImage); 
+                closeEditModal();
+                showToast("Vault Record Updated!");
+            } catch (error) {
+                console.error(error);
+            }
+            btn.innerHTML = `<i class="fas fa-save"></i> Save Changes`;
+        });
+
+        // Life Time Data Recovery Restore Operations
+        window.restoreBook = async function(logId) {
+            const logEntry = dbLogs.find(l => l.id === logId);
+            if(!logEntry || !logEntry.deletedData) return;
+
+            if(confirm(`Do you want to Recover/Restore "${logEntry.bookTitle}" to the main Vault?`)) {
+                try {
+                    const restoredData = { ...logEntry.deletedData };
+                    delete restoredData.id; 
+                    restoredData.createdAt = new Date().getTime(); 
+
+                    await addDoc(collection(db, "books"), restoredData);
+                    await logActivity("RESTORE", logEntry.bookTitle, logEntry.image);
+                    showToast("Book Restored Successfully!");
+                } catch(error) {
+                    console.error(error);
+                }
+            }
+        }
+
+        // Activity Logging Render Engine
+        function renderLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+            
+            if (dbLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No activity tracked yet. Logs will appear here.</td></tr>`;
+                return;
+            }
+
+            dbLogs.forEach(log => {
+                let badgeHTML = '';
+                let recoveryHTML = '';
+                
+                if(log.action === 'ADD') {
+                    badgeHTML = `<span class="log-badge log-add"><i class="fas fa-plus"></i> Uploaded</span>`;
+                } else if(log.action === 'EDIT') {
+                    badgeHTML = `<span class="log-badge log-edit"><i class="fas fa-pen"></i> Modified</span>`;
+                } else if(log.action === 'DELETE') {
+                    badgeHTML = `<span class="log-badge log-delete"><i class="fas fa-trash"></i> Deleted</span>`;
+                    if(log.deletedData) {
+                        recoveryHTML = `<br><button class="action-btn btn-recover" onclick="restoreBook('${log.id}')"><i class="fas fa-undo"></i> Recover Book</button>`;
+                    }
+                } else if (log.action === 'RESTORE') {
+                    badgeHTML = `<span class="log-badge log-restore"><i class="fas fa-trash-restore"></i> Restored</span>`;
+                }
+
+                let imageElement = log.image ? `<img src="${log.image}" class="log-table-img" onerror="this.src='https://via.placeholder.com/40x55?text=Img'">` : '';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${badgeHTML}</td>
+                    <td style="display: flex; align-items: center;">
+                        ${imageElement}
+                        <span style="color:#fff; font-weight: 500; font-size:1.05rem;">${log.bookTitle}</span>
+                    </td>
+                    <td>
+                        <div class="log-admin-name">
+                            <img src="https://i.postimg.cc/D0BF1b77/file-000000000e847207a64f6711d825a859.png" class="log-admin-avatar">
+                            ${log.adminName}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="color: #a1a1aa; font-size: 0.9rem;">
+                            <i class="far fa-clock" style="margin-right:5px;"></i> ${log.dateStr}
+                        </div>
+                        ${recoveryHTML}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
