@@ -11,74 +11,22 @@
 </head>
 <body>
 
-    <div id="loginScreen" class="login-page-container hidden">
-        <div class="login-wrapper">
-            <div class="login-box">
-                <div class="logo-container">
-                    <img src="https://i.postimg.cc/cJdGqYHG/IMG-20260524-WA0004.jpg" alt="Logo">
-                </div>
-                <h1>MULTIVERSE BOOKS</h1>
-                <p class="subtitle" id="statusText">SECURE VAULT ACCESS</p>
-
-                <div id="phoneForm">
-                    <div class="input-group">
-                        <label>FULL NAME</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-user"></i>
-                            <input type="text" id="userName" placeholder="Ex: Rahul Kumar" required autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>MOBILE NUMBER</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-mobile-screen"></i>
-                            <input type="tel" id="mobileNumber" placeholder="Ex: 9876543210" pattern="[0-9]{10}" maxlength="10">
-                        </div>
-                    </div>
-                    <div id="recaptcha-container"></div>
-                    <button class="submit-btn" id="sendOtpBtn">
-                        <span>SEND OTP</span>
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-
-                <div id="otpForm" class="hidden">
-                    <div class="input-group">
-                        <label>ENTER 6-DIGIT OTP</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-key"></i>
-                            <input type="text" id="otpCode" placeholder="••••••" maxlength="6">
-                        </div>
-                    </div>
-                    <button class="submit-btn" id="verifyOtpBtn">
-                        <span>VERIFY & LOGIN</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <aside class="sidebar hidden" id="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img src="https://i.postimg.cc/cJdGqYHG/IMG-20260524-WA0004.jpg" alt="Logo" class="brand-logo">
             MULTIVERSE ADMIN
         </div>
         
-        <div class="nav-link active" id="navAddBook">
+        <div class="nav-link active" id="navAddBook" onclick="switchTab('add')">
             <i class="fas fa-plus-circle"></i> Add New Book
         </div>
-        <div class="nav-link" id="navManageBooks">
+        <div class="nav-link" id="navManageBooks" onclick="switchTab('manage')">
             <i class="fas fa-layer-group"></i> Manage Books
         </div>
-        <div class="nav-link" id="navAnalytics">
+        <div class="nav-link" id="navAnalytics" onclick="switchTab('analytics')">
             <i class="fas fa-chart-line"></i> System Logs
-        </div>
-
-        <div class="nav-link" id="btnLogout" style="color: var(--accent-danger); margin-top: 20px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2);">
-            <i class="fas fa-sign-out-alt"></i> Secure Logout
         </div>
         
         <div class="sidebar-bottom">
@@ -86,12 +34,12 @@
                 <span class="secure-dot-icon"></span> SYSTEM SECURE
             </div>
             <div class="sidebar-footer-text">
-                MULTIVERSE BOOKS • SECURED
+                MULTIVERSE BOOKS • MADxPRINCE
             </div>
         </div>
     </aside>
 
-    <main class="main-content hidden" id="mainContent">
+    <main class="main-content">
         <header class="topbar">
             <div class="topbar-left">
                 <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
@@ -99,7 +47,7 @@
             </div>
             <div class="admin-profile">
                 <div class="admin-info">
-                    <h4 id="currentAdminName">Verifying Admin...</h4>
+                    <h4 id="currentAdminName">MADxPRINCE</h4>
                     <span>Active Session</span>
                 </div>
                 <div class="admin-img-wrapper">
@@ -110,6 +58,7 @@
         </header>
 
         <div class="dashboard-area">
+            
             <div id="sectionAddBook" class="section-container active">
                 <div class="admin-card">
                     <div class="card-header"><i class="fas fa-pen-nib"></i> Enter Book Details</div>
@@ -199,12 +148,13 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 
     <div class="modal-overlay" id="editModal">
         <div class="modal-content">
-            <i class="fas fa-times close-modal" id="closeModalBtn"></i>
+            <i class="fas fa-times close-modal" onclick="closeEditModal()"></i>
             <div class="card-header" style="margin-bottom: 20px;"><i class="fas fa-pen"></i> Edit Vault Record</div>
             <form id="editBookForm" class="modal-grid">
                 <input type="hidden" id="editDocId"> 
@@ -241,7 +191,7 @@
                     <input type="url" id="edPdfUrl" class="form-input" required autocomplete="off">
                 </div>
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label class="fa-label" style="display: block; font-size: 0.8rem; font-weight: 600; color: #d4d4d8; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;">YouTube Link (Optional)</label>
+                    <label class="form-label">YouTube Link (Optional)</label>
                     <input type="url" id="edYtUrl" class="form-input" autocomplete="off">
                 </div>
                 <button type="submit" class="btn-submit btn-edit-submit" style="grid-column: 1 / -1;">
@@ -256,4 +206,3 @@
     <script type="module" src="app.js"></script>
 </body>
 </html>
-
